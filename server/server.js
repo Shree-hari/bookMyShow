@@ -1,5 +1,7 @@
 require('dotenv').config(); // for .env file
 const path = require('path');
+const rateLimit = require("express-rate-limit");
+const helmet = require('helmet');
 
 const express = require('express');
 const cors = require('cors');
@@ -11,6 +13,17 @@ const showRouter = require('./routes/showRoute');
 const bookingRouter = require('./routes/bookingRoute');
 const app = express();
 
+// app.use(helmet.contentSecurityPolicy({
+//     directives: {
+//         defaultSrc: ["'self'"],
+//         scriptSrc: ["'self'", "'unsafe-inline'","'unsafe-eval'"],
+//         styleSrc: ["'self'", "'unsafe-inline'"],
+//         fontSrc: ["'self'", "'https://fonts.gstatic.com'"],
+//         imgSrc: ["'self'", "data:"],
+//     },
+// }));
+
+app.use(helmet());
 app.use(cors(
     {
         origin: "*",
@@ -31,6 +44,14 @@ app.use(express.json());
 app.use("/api/bookings/verify", express.raw({ type: "application/json" }));
 
 connectDB();
+
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limit each IP to 100 requests per windowMs
+    message: "Too many requests from this IP, please try again after 15 minutes",
+});
+
+app.use(limiter);
 
 // Routes
 app.use('/api/users', userRouter);
