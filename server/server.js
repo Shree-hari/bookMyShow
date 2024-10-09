@@ -3,7 +3,7 @@ const path = require('path');
 
 const express = require('express');
 const cors = require('cors');
-const connectDB = require('./config/dbConfig');
+const connectDB = require('./config/dbconfig');
 const userRouter = require('./routes/userRoute');
 const movieRouter = require('./routes/movieRoute');
 const theatreRouter = require('./routes/theatreRoute');
